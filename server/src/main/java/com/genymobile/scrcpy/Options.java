@@ -37,6 +37,7 @@ public class Options {
     private float maxFps;
     private float angle;
     private boolean tunnelForward;
+    private int listenPort = 0;
     private Rect crop;
     private boolean control = true;
     private int displayId;
@@ -138,6 +139,10 @@ public class Options {
 
     public boolean isTunnelForward() {
         return tunnelForward;
+    }
+
+    public int getFrowardListenPort() {
+        return listenPort;
     }
 
     public Rect getCrop() {
@@ -376,6 +381,8 @@ public class Options {
                 case "tunnel_forward":
                     options.tunnelForward = Boolean.parseBoolean(value);
                     break;
+                case "forward_port":
+                    options.listenPort = Integer.parseInt(value);
                 case "crop":
                     if (!value.isEmpty()) {
                         options.crop = parseCrop(value);

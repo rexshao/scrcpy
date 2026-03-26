@@ -10,6 +10,7 @@ import android.system.OsConstants;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Scanner;
@@ -57,6 +58,36 @@ public final class IO {
 
     public static void writeFully(FileDescriptor fd, byte[] buffer, int offset, int len) throws IOException {
         writeFully(fd, ByteBuffer.wrap(buffer, offset, len));
+    }
+
+    public static void writeFully(OutputStream out, byte[] buffer, int offset, int len) throws IOException {
+        int remaining = len;
+        while (remaining > 0) {
+            int toWrite = remaining;
+            out.write(buffer, offset + (len - remaining), toWrite);
+            remaining -= toWrite;
+        }
+        out.flush();
+    }
+
+    public static void writeFully(OutputStream out, ByteBuffer from) throws IOException {
+        if (from.hasArray()) {
+            byte[] array = from.array();
+            int offset = from.arrayOffset() + from.position();
+            int len = from.remaining();
+            writeFully(out, array, offset, len);
+            from.position(from.position() + len);
+        } else {
+            // fallback: copy to a temporary buffer
+            int remaining = from.remaining();
+            byte[] buf = new byte[Math.min(remaining, 8192)];
+            while (from.hasRemaining()) {
+                int toRead = Math.min(from.remaining(), buf.length);
+                from.get(buf, 0, toRead);
+                out.write(buf, 0, toRead);
+            }
+            out.flush();
+        }
     }
 
     public static String toString(InputStream inputStream) {
