@@ -383,6 +383,7 @@ public class Options {
                     break;
                 case "forward_port":
                     options.listenPort = Integer.parseInt(value);
+                    break;
                 case "crop":
                     if (!value.isEmpty()) {
                         options.crop = parseCrop(value);

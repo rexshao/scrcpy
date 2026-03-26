@@ -7,14 +7,12 @@ import com.genymobile.scrcpy.util.StringUtils;
 import android.net.LocalServerSocket;
 import android.net.LocalSocket;
 import android.net.LocalSocketAddress;
-
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 import java.io.Closeable;
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public final class DesktopConnection implements Closeable {
