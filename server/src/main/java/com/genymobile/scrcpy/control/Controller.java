@@ -277,7 +277,9 @@ public class Controller implements AsyncProcessor, VirtualDisplayListener {
                 break;
             case ControlMessage.TYPE_INJECT_TOUCH_EVENT:
                 if (supportsInputEvents) {
-                    injectTouch(msg.getAction(), msg.getPointerId(), msg.getPosition(), msg.getPressure(), msg.getActionButton(), msg.getButtons());
+                   if(!injectTouch(msg.getAction(), msg.getPointerId(), msg.getPosition(), msg.getPressure(), msg.getActionButton(), msg.getButtons())){
+                    Ln.d("injectTouch failed ");
+                   }
                 }
                 break;
             case ControlMessage.TYPE_INJECT_SCROLL_EVENT:
@@ -412,10 +414,12 @@ public class Controller implements AsyncProcessor, VirtualDisplayListener {
         if (pair == null) {
             return false;
         }
-
+        
         Point point = pair.first;
         int targetDisplayId = pair.second;
-
+        Ln.v("injectTouch action: " + String.valueOf(action)
+        + "Position: " + point.toString()
+        );
         int pointerIndex = pointersState.getPointerIndex(pointerId);
         if (pointerIndex == -1) {
             Ln.w("Too many pointers for touch event");
