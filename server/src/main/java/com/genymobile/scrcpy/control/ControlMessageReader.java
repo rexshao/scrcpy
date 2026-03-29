@@ -2,6 +2,7 @@ package com.genymobile.scrcpy.control;
 
 import com.genymobile.scrcpy.device.Position;
 import com.genymobile.scrcpy.util.Binary;
+import com.genymobile.scrcpy.util.Ln;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -24,6 +25,7 @@ public class ControlMessageReader {
 
     public ControlMessage read() throws IOException {
         int type = dis.readUnsignedByte();
+        Ln.d("read ControlMessage type: " + String.valueOf(type));
         switch (type) {
             case ControlMessage.TYPE_INJECT_KEYCODE:
                 return parseInjectKeycode();
@@ -105,6 +107,12 @@ public class ControlMessageReader {
         long pointerId = dis.readLong();
         Position position = parsePosition();
         float pressure = Binary.u16FixedPointToFloat(dis.readShort());
+        Ln.d("parseInjectTouchEvent action: " + String.valueOf(action)
+        + " pointer: " + String.valueOf(pointerId)
+        + " pressure: " + String.valueOf(pressure)
+        + " Pos: " +  position.getPoint().toString()
+        + " ScreenSize: " + position.getScreenSize().toString()
+        );
         int actionButton = dis.readInt();
         int buttons = dis.readInt();
         return ControlMessage.createInjectTouchEvent(action, pointerId, position, pressure, actionButton, buttons);
