@@ -10,6 +10,7 @@ import com.genymobile.scrcpy.device.DisplayInfo;
 import com.genymobile.scrcpy.device.Point;
 import com.genymobile.scrcpy.device.Position;
 import com.genymobile.scrcpy.device.Size;
+import com.genymobile.scrcpy.util.AffineMatrix;
 import com.genymobile.scrcpy.util.Ln;
 import com.genymobile.scrcpy.util.LogUtils;
 import com.genymobile.scrcpy.video.SurfaceCapture;
@@ -86,7 +87,8 @@ public class Controller implements AsyncProcessor, VirtualDisplayListener {
     private final KeyCharacterMap charMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
 
     private final AtomicBoolean isSettingClipboard = new AtomicBoolean();
-
+    private final AtomicReference<Size> screenSizeOfAffine = new AtomicReference<>();
+    private final AtomicReference<AffineMatrix> physicalDisplayAffine = new AtomicReference<>();
     private final AtomicReference<DisplayData> displayData = new AtomicReference<>();
     private final Object displayDataAvailable = new Object(); // condition variable
 
@@ -400,7 +402,30 @@ public class Controller implements AsyncProcessor, VirtualDisplayListener {
             targetDisplayId = displayData.virtualDisplayId;
         } else {
             // No display, use the raw coordinates
-            point = position.getPoint();
+            Size eventSize = position.getScreenSize();
+            if (eventSize.getWidth() > 0 && eventSize.getHeight() > 0){
+                if (physicalDisplayAffine.get() ==null || !eventSize.equals(screenSizeOfAffine.get())){
+               
+                    DisplayInfo displayInfo = ServiceManager.getDisplayManager().getDisplayInfo(0);
+                    Size displaySize;
+                    if (displayInfo != null) {
+                        displaySize = displayInfo.getSize();
+                    } else {
+                        Ln.w("Main display not found, fallback to 1920x1080 240dpi");
+                        displaySize = new Size(1920, 1080);
+                    }
+                    Ln.v("make AffineMatrix from " + eventSize.toString() + " to " + displaySize.toString());
+                    physicalDisplayAffine.getAndSet(AffineMatrix.scale(eventSize,displaySize));
+                    screenSizeOfAffine.getAndSet(eventSize);                   
+                }
+               
+            }
+            AffineMatrix affine = physicalDisplayAffine.get();
+            if (affine != null) {
+                point = affine.apply(position.getPoint());
+            } else {
+                point = position.getPoint();
+            }            
             targetDisplayId = displayId;
         }
 
