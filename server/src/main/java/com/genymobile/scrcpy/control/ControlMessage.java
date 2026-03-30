@@ -26,6 +26,7 @@ public final class ControlMessage {
     public static final int TYPE_START_APP = 16;
     public static final int TYPE_RESET_VIDEO = 17;
     public static final int TYPE_GET_FOREGROUND_APP = 18;
+    public static final int TYPE_FORCE_STOP_APP = 19;
 
     public static final long SEQUENCE_INVALID = 0;
 
@@ -164,6 +165,13 @@ public final class ControlMessage {
         ControlMessage msg = new ControlMessage();
         msg.type = TYPE_START_APP;
         msg.text = name;
+        return msg;
+    }
+
+    public static ControlMessage createForceStopApp(String packageName) {
+        ControlMessage msg = new ControlMessage();
+        msg.type = TYPE_FORCE_STOP_APP;
+        msg.text = packageName;
         return msg;
     }
 

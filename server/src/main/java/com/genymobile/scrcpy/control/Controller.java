@@ -337,6 +337,12 @@ public class Controller implements AsyncProcessor, VirtualDisplayListener {
             case ControlMessage.TYPE_OPEN_HARD_KEYBOARD_SETTINGS:
                 openHardKeyboardSettings();
                 break;
+            case ControlMessage.TYPE_FORCE_STOP_APP:
+                String pkgToStop = msg.getText();
+                if (pkgToStop != null && !pkgToStop.isEmpty()) {
+                    ServiceManager.getActivityManager().forceStopPackage(pkgToStop);
+                }
+                break;
             case ControlMessage.TYPE_START_APP:
                 startAppAsync(msg.getText());
                 break;
