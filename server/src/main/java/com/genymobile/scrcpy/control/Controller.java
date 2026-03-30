@@ -314,6 +314,14 @@ public class Controller implements AsyncProcessor, VirtualDisplayListener {
                     setDisplayPower(msg.getOn());
                 }
                 break;
+            case ControlMessage.TYPE_GET_FOREGROUND_APP:
+                String pkg = com.genymobile.scrcpy.device.Device.getForegroundPackage();
+                if (pkg == null) {
+                    pkg = "";
+                }
+                DeviceMessage fmsg = DeviceMessage.createForegroundApp(pkg);
+                sender.send(fmsg);
+                break;
             case ControlMessage.TYPE_ROTATE_DEVICE:
                 Device.rotateDevice(getActionDisplayId());
                 break;

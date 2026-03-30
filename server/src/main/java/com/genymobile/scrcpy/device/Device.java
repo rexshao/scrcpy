@@ -14,6 +14,7 @@ import com.genymobile.scrcpy.wrappers.WindowManager;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -311,5 +312,27 @@ public final class Device {
             am.forceStopPackage(packageName);
         }
         am.startActivity(launchIntent, options);
+    }
+
+    public static String getForegroundPackage() {
+        try {
+                Context ctx = FakeContext.get();
+                android.app.ActivityManager am = (android.app.ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+            if (am == null) {
+                return null;
+            }
+            // Deprecated API but works as a best-effort to get the top activity package
+            @SuppressWarnings("deprecation")
+            java.util.List<android.app.ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+            if (tasks != null && !tasks.isEmpty()) {
+                android.app.ActivityManager.RunningTaskInfo top = tasks.get(0);
+                if (top.topActivity != null) {
+                    return top.topActivity.getPackageName();
+                }
+            }
+        } catch (Throwable e) {
+            Ln.e("Could not get foreground package", e);
+        }
+        return null;
     }
 }

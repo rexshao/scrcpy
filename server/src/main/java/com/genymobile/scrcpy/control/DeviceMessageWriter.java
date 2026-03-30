@@ -30,6 +30,13 @@ public class DeviceMessageWriter {
                 dos.writeInt(len);
                 dos.write(raw, 0, len);
                 break;
+            case DeviceMessage.TYPE_FOREGROUND_APP:
+                String pkg = msg.getText();
+                byte[] rawPkg = pkg.getBytes(StandardCharsets.UTF_8);
+                int pkgLen = StringUtils.getUtf8TruncationIndex(rawPkg, CLIPBOARD_TEXT_MAX_LENGTH);
+                dos.writeShort(pkgLen);
+                dos.write(rawPkg, 0, pkgLen);
+                break;
             case DeviceMessage.TYPE_ACK_CLIPBOARD:
                 dos.writeLong(msg.getSequence());
                 break;
